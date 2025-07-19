@@ -159,21 +159,19 @@ install_dependencies() {
     log "Installiere Abhängigkeiten..."
     
     # Basis-Pakete
-    apt-get install -y \\
-        curl \\
-        wget \\
-        git \\
-        unzip \\
-        tar \\
-        software-properties-common \\
-        apt-transport-https \\
-        ca-certificates \\
-        gnupg \\
-        lsb-release \\
-        build-essential \\
-        supervisor \\
-        nginx
-    
+    apt-get install -y curl
+    apt-get install -y wget
+    apt-get install -y git
+    apt-get install -y unzip
+    apt-get install -y tar
+    apt-get install -y software-properties-common
+    apt-get install -y apt-transport-https
+    apt-get install -y ca-certificates
+    apt-get install -y gnupg
+    apt-get install -y lsb-release
+    apt-get install -y build-essential
+    apt-get install -y supervisor
+    apt-get install -y nginx    
     # Python 3.11 installieren
     if ! command -v python3.11 &> /dev/null; then
         add-apt-repository ppa:deadsnakes/ppa -y
