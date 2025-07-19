@@ -233,8 +233,7 @@ install_steamcmd() {
     
     # SteamCMD einmal ausführen, um die Verzeichnisstruktur zu erstellen
     log "Führe SteamCMD einmal aus, um die Verzeichnisstruktur zu erstellen..."
-    (cd "$STEAMCMD_DIR" && ./steamcmd.sh +quit)
-    
+    (cd "$STEAMCMD_DIR" && ./steamcmd.sh +quit || true)
     log "SteamCMD installiert"
 }
 
@@ -244,7 +243,7 @@ install_ets2_server() {
     (cd "$STEAMCMD_DIR" && ./steamcmd.sh +force_install_dir "$SERVERS_DIR/ets2-dedicated" \\
              +login anonymous \\
              +app_update 1948160 validate \\
-             +quit)
+             +quit || true)
     
     # Berechtigungen setzen
     chown -R www-data:www-data "$SERVERS_DIR"
@@ -266,11 +265,12 @@ install_panel_backend() {
     rm -rf temp_repo
     
     # Python Virtual Environment erstellen
+    rm -rf backend/venv # Füge diese Zeile hinzu, um das venv vor der Neuerstellung zu entfernen
     python3.11 -m venv backend/venv
     source backend/venv/bin/activate
     
     # Python-Abhängigkeiten installieren
-    pip install --upgrade pip
+    pip install --upgrade pip setuptools wheel
     pip install flask flask-sqlalchemy flask-jwt-extended flask-cors flask-socketio psutil werkzeug
     
     log "Panel-Backend installiert"
