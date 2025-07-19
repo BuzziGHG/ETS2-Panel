@@ -24,3 +24,7 @@
 
 - Fixed bash syntax error due to incorrect escaping of color codes and awk commands.
 
+
+
+- Fixed bash syntax error in log function due to incorrect escaping.
+

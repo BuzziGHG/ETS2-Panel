@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 
 # Logging-Funktion
 log() {
-    echo -e "${GREEN}[$(date +\'%Y-%m-%d %H:%M:%S\')] $1${NC}"
+    echo -e "${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')] $1${NC}"
 }
 
 error() {
