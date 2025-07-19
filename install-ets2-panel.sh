@@ -387,7 +387,8 @@ Type=simple
 User=www-data
 Group=www-data
 WorkingDirectory=$INSTALL_DIR/backend
-Environment=PATH=$INSTALL_DIR/backend/venv/bin
+Environment="PATH=$INSTALL_DIR/backend/venv/bin"
+Environment="PYTHONPATH=$INSTALL_DIR/backend"
 ExecStart=$INSTALL_DIR/backend/venv/bin/python src/main.py
 Restart=always
 RestartSec=10
@@ -410,6 +411,7 @@ initialize_database() {
     
     cd "$INSTALL_DIR/backend"
     source venv/bin/activate
+    export PYTHONPATH=$INSTALL_DIR/backend
     
     # Datenbank-Tabellen erstellen (würde normalerweise durch Flask-Migrate gemacht)
     python -c "
@@ -421,15 +423,15 @@ with app.app_context():
     
     # Admin-Benutzer erstellen
     admin = User(
-        username='$ADMIN_USERNAME',
-        email='$ADMIN_EMAIL',
-        role='admin'
+        username=\'$ADMIN_USERNAME\',
+        email=\'$ADMIN_EMAIL\',
+        role=\'admin\'
     )
-    admin.set_password('$ADMIN_PASSWORD')
+    admin.set_password(\'$ADMIN_PASSWORD\')
     
     db.session.add(admin)
     db.session.commit()
-    print('Admin-Benutzer erstellt')
+    print(\'Admin-Benutzer erstellt\')
 "
     
     log "Datenbank initialisiert"

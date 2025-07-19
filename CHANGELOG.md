@@ -8,3 +8,7 @@
 
 - Fixed `ERR_PNPM_NO_PKG_MANIFEST` error by ensuring correct copying of frontend and backend files.
 
+
+
+- Fixed `ModuleNotFoundError: No module named 'src'` by setting `PYTHONPATH` in the installation script and systemd service.
+
