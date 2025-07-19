@@ -4,3 +4,7 @@
 - Resolved issue where `python3.11-venv` was not being installed, causing virtual environment creation to fail.
 
 
+
+
+- Fixed `ERR_PNPM_NO_PKG_MANIFEST` error by ensuring correct copying of frontend and backend files.
+

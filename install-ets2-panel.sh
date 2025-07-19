@@ -264,7 +264,7 @@ install_panel_backend() {
     
     # Backend-Code von GitHub klonen
     git clone https://github.com/BuzziGHG/ETS2-Panel.git temp_repo
-    cp -r temp_repo/ets2-panel-backend backend
+    cp -r temp_repo/ets2-panel-backend/* backend
     rm -rf temp_repo
     
     # Python Virtual Environment erstellen
@@ -286,7 +286,7 @@ install_panel_frontend() {
     
     # Frontend-Code von GitHub klonen
     git clone https://github.com/BuzziGHG/ETS2-Panel.git temp_repo
-    cp -r temp_repo/ets2-panel-frontend frontend
+    cp -r temp_repo/ets2-panel-frontend/* frontend
     rm -rf temp_repo
     
     # Frontend-Code bauen
