@@ -1,0 +1,12 @@
+{
+  "loading_application": "Loading application...",
+  "server_management": "Server Management",
+  "page_coming_soon": "This page will be implemented in the next phase.",
+  "user_management": "User Management",
+  "settings": "Settings",
+  "login": "Login",
+  "dashboard": "Dashboard",
+  "logged_in_as": "Logged in as",
+  "logout": "Logout"
+}
+
