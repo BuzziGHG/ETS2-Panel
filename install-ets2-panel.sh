@@ -7,11 +7,11 @@
 set -e  # Beende bei Fehlern
 
 # Farben für die Ausgabe
-RED=\'\\033[0;31m\'
-GREEN=\'\\033[0;32m\'
-YELLOW=\'\\033[1;33m\'
-BLUE=\'\\033[0;34m\'
-NC=\'\\033[0m\' # No Color
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
 
 # Logging-Funktion
 log() {
@@ -66,13 +66,13 @@ check_requirements() {
     fi
     
     # Mindest-RAM prüfen (2GB)
-    total_ram=$(free -m | awk \'NR==2{printf "%.0f", $2}\' )
+    total_ram=$(free -m | awk 'NR==2{printf "%.0f", $2}')
     if [[ $total_ram -lt 2048 ]]; then
         warning "Weniger als 2GB RAM erkannt. Empfohlen sind mindestens 2GB."
     fi
     
     # Freier Speicherplatz prüfen (10GB)
-    free_space=$(df / | awk \'NR==2{printf "%.0f", $4/1024/1024}\' )
+    free_space=$(df / | awk 'NR==2{printf "%.0f", $4/1024/1024}')
     if [[ $free_space -lt 10 ]]; then
         error "Nicht genügend freier Speicherplatz. Mindestens 10GB erforderlich."
         exit 1
@@ -580,7 +580,7 @@ main() {
 }
 
 # Fehlerbehandlung
-trap \'error "Installation fehlgeschlagen in Zeile $LINENO"\' ERR
+trap 'error "Installation fehlgeschlagen in Zeile $LINENO"' ERR
 
 # Skript ausführen
 main "$@"
