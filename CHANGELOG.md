@@ -16,3 +16,7 @@
 
 - Fixed `ERR_PNPM_NO_PKG_MANIFEST` error by ensuring the frontend directory is created before copying files.
 
+
+
+- Fixed `ERR_PNPM_NO_PKG_MANIFEST` error by moving the entire `ets2-panel-frontend` directory instead of copying its contents.
+

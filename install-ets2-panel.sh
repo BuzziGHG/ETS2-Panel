@@ -7,15 +7,15 @@
 set -e  # Beende bei Fehlern
 
 # Farben für die Ausgabe
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+RED=\'\\033[0;31m\'
+GREEN=\'\\033[0;32m\'
+YELLOW=\'\\033[1;33m\'
+BLUE=\'\\033[0;34m\'
+NC=\'\\033[0m\' # No Color
 
 # Logging-Funktion
 log() {
-    echo -e "${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')] $1${NC}"
+    echo -e "${GREEN}[$(date +\'%Y-%m-%d %H:%M:%S\')] $1${NC}"
 }
 
 error() {
@@ -66,13 +66,13 @@ check_requirements() {
     fi
     
     # Mindest-RAM prüfen (2GB)
-    total_ram=$(free -m | awk 'NR==2{printf "%.0f", $2}')
+    total_ram=$(free -m | awk \'NR==2{printf "%.0f", $2}\' )
     if [[ $total_ram -lt 2048 ]]; then
         warning "Weniger als 2GB RAM erkannt. Empfohlen sind mindestens 2GB."
     fi
     
     # Freier Speicherplatz prüfen (10GB)
-    free_space=$(df / | awk 'NR==2{printf "%.0f", $4/1024/1024}')
+    free_space=$(df / | awk \'NR==2{printf "%.0f", $4/1024/1024}\' )
     if [[ $free_space -lt 10 ]]; then
         error "Nicht genügend freier Speicherplatz. Mindestens 10GB erforderlich."
         exit 1
@@ -96,20 +96,20 @@ collect_user_input() {
 
     # HTTPS-Konfiguration
     if [[ "$PANEL_HOST" =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
-        warning "Eine IP-Adresse wurde erkannt. HTTPS (Let\'s Encrypt) ist mit IP-Adressen nicht möglich. Das Panel wird über HTTP verfügbar sein."
+        warning "Eine IP-Adresse wurde erkannt. HTTPS (Let\\\'s Encrypt) ist mit IP-Adressen nicht möglich. Das Panel wird über HTTP verfügbar sein."
         ENABLE_HTTPS="n"
     else
         if [[ -z "$ENABLE_HTTPS" ]]; then
-            read -p "HTTPS mit Let\'s Encrypt aktivieren? (y/n) [y]: " ENABLE_HTTPS_INPUT
+            read -p "HTTPS mit Let\\\'s Encrypt aktivieren? (y/n) [y]: " ENABLE_HTTPS_INPUT
             ENABLE_HTTPS=${ENABLE_HTTPS_INPUT:-y}
         fi
     fi
     
     if [[ "$ENABLE_HTTPS" == "y" || "$ENABLE_HTTPS" == "Y" ]]; then
         if [[ -z "$LETSENCRYPT_EMAIL" ]]; then
-            read -p "E-Mail-Adresse für Let\'s Encrypt: " LETSENCRYPT_EMAIL
+            read -p "E-Mail-Adresse für Let\\\'s Encrypt: " LETSENCRYPT_EMAIL
             if [[ -z "$LETSENCRYPT_EMAIL" ]]; then
-                error "E-Mail-Adresse ist für Let\'s Encrypt erforderlich, wenn HTTPS aktiviert ist."
+                error "E-Mail-Adresse ist für Let\\\'s Encrypt erforderlich, wenn HTTPS aktiviert ist."
                 exit 1
             fi
         fi
@@ -159,19 +159,19 @@ install_dependencies() {
     log "Installiere Abhängigkeiten..."
     
     # Basis-Pakete
-    apt-get install -y \
-        curl \
-        wget \
-        git \
-        unzip \
-        tar \
-        software-properties-common \
-        apt-transport-https \
-        ca-certificates \
-        gnupg \
-        lsb-release \
-        build-essential \
-        supervisor \
+    apt-get install -y \\
+        curl \\
+        wget \\
+        git \\
+        unzip \\
+        tar \\
+        software-properties-common \\
+        apt-transport-https \\
+        ca-certificates \\
+        gnupg \\
+        lsb-release \\
+        build-essential \\
+        supervisor \\
         nginx
     
     # Python 3.11 installieren
@@ -243,9 +243,9 @@ install_steamcmd() {
 # ETS2 Dedicated Server installieren
 install_ets2_server() {
     log "Installiere ETS2 Dedicated Server..."
-    (cd "$STEAMCMD_DIR" && ./steamcmd.sh +force_install_dir "$SERVERS_DIR/ets2-dedicated" \
-             +login anonymous \
-             +app_update 1948160 validate \
+    (cd "$STEAMCMD_DIR" && ./steamcmd.sh +force_install_dir "$SERVERS_DIR/ets2-dedicated" \\
+             +login anonymous \\
+             +app_update 1948160 validate \\
              +quit)
     
     # Berechtigungen setzen
@@ -264,7 +264,7 @@ install_panel_backend() {
     
     # Backend-Code von GitHub klonen
     git clone https://github.com/BuzziGHG/ETS2-Panel.git temp_repo
-    cp -r temp_repo/ets2-panel-backend/* backend
+    mv temp_repo/ets2-panel-backend backend
     rm -rf temp_repo
     
     # Python Virtual Environment erstellen
@@ -286,8 +286,7 @@ install_panel_frontend() {
     
     # Frontend-Code von GitHub klonen
     git clone https://github.com/BuzziGHG/ETS2-Panel.git temp_repo
-    mkdir -p frontend
-    cp -r temp_repo/ets2-panel-frontend/* frontend
+    mv temp_repo/ets2-panel-frontend frontend
     rm -rf temp_repo
     
     # Frontend-Code bauen
@@ -317,28 +316,28 @@ server {
     
     # Frontend-Routing (SPA)
     location / {
-        try_files \$uri \$uri/ /index.html;
+        try_files \\$uri \\$uri/ /index.html;
     }
     
     # Backend-API
     location /api {
         proxy_pass http://127.0.0.1:5000;
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_set_header Host \\$host;
+        proxy_set_header X-Real-IP \\$remote_addr;
+        proxy_set_header X-Forwarded-For \\$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \\$scheme;
     }
     
     # WebSocket für Echtzeit-Updates
     location /socket.io {
         proxy_pass http://127.0.0.1:5000;
         proxy_http_version 1.1;
-        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Upgrade \\$http_upgrade;
         proxy_set_header Connection "upgrade";
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_set_header Host \\$host;
+        proxy_set_header X-Real-IP \\$remote_addr;
+        proxy_set_header X-Forwarded-For \\$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \\$scheme;
     }
 }
 EOF
@@ -353,13 +352,13 @@ EOF
     log "Nginx konfiguriert"
 }
 
-# HTTPS mit Let's Encrypt einrichten
+# HTTPS mit Let\'s Encrypt einrichten
 setup_https() {
     if [[ "$ENABLE_HTTPS" != "y" && "$ENABLE_HTTPS" != "Y" ]]; then
         return
     fi
     
-    log "Richte HTTPS mit Let's Encrypt ein..."
+    log "Richte HTTPS mit Let\'s Encrypt ein..."
     
     # Certbot installieren
     apt-get install -y certbot python3-certbot-nginx
@@ -415,25 +414,7 @@ initialize_database() {
     export PYTHONPATH=$INSTALL_DIR/backend
     
     # Datenbank-Tabellen erstellen (würde normalerweise durch Flask-Migrate gemacht)
-    python -c "
-from src.models.user import db, User
-from src.main import app
-
-with app.app_context():
-    db.create_all()
-    
-    # Admin-Benutzer erstellen
-    admin = User(
-        username=\'$ADMIN_USERNAME\',
-        email=\'$ADMIN_EMAIL\',
-        role=\'admin\'
-    )
-    admin.set_password(\'$ADMIN_PASSWORD\')
-    
-    db.session.add(admin)
-    db.session.commit()
-    print(\'Admin-Benutzer erstellt\')
-"
+    python -c "\nfrom src.models.user import db, User\nfrom src.main import app\n\nwith app.app_context():\n    db.create_all()\n    \n    # Admin-Benutzer erstellen\n    admin = User(\n        username=\\'$ADMIN_USERNAME\\',\n        email=\\'$ADMIN_EMAIL\\',\n        role=\\'admin\\'\n    )\n    admin.set_password(\\'$ADMIN_PASSWORD\\')\n    \n    db.session.add(admin)\n    db.session.commit()\n    print(\\'Admin-Benutzer erstellt\\')\n"
     
     log "Datenbank initialisiert"
 }
@@ -491,7 +472,7 @@ configure_firewall() {
     if command -v ufw &> /dev/null; then
         ufw --force enable
         ufw allow ssh
-        ufw allow 'Nginx Full'
+        ufw allow \'Nginx Full\'
         ufw allow 27015:27030/tcp  # ETS2 Server Ports
         ufw allow 27015:27030/udp
         log "UFW Firewall konfiguriert"
@@ -599,7 +580,7 @@ main() {
 }
 
 # Fehlerbehandlung
-trap 'error "Installation fehlgeschlagen in Zeile $LINENO"' ERR
+trap \'error "Installation fehlgeschlagen in Zeile $LINENO"\' ERR
 
 # Skript ausführen
 main "$@"
