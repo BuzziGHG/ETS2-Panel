@@ -286,6 +286,7 @@ install_panel_frontend() {
     
     # Frontend-Code von GitHub klonen
     git clone https://github.com/BuzziGHG/ETS2-Panel.git temp_repo
+    mkdir -p frontend
     cp -r temp_repo/ets2-panel-frontend/* frontend
     rm -rf temp_repo
     
