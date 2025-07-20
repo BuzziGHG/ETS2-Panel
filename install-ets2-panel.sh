@@ -7,15 +7,15 @@
 set -e  # Beende bei Fehlern
 
 # Farben für die Ausgabe
-RED=\'\\033[0;31m\'
-GREEN=\'\\033[0;32m\'
-YELLOW=\'\\033[1;33m\'
-BLUE=\'\\033[0;34m\'
-NC=\'\\033[0m\' # No Color
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
 
 # Logging-Funktion
 log() {
-    echo -e "${GREEN}[$(date +\'%Y-%m-%d %H:%M:%S\')] $1${NC}"
+    echo -e "${GREEN}[$(date +%Y-%m-%d\ %H:%M:%S)] $1${NC}"
 }
 
 error() {
@@ -66,13 +66,13 @@ check_requirements() {
     fi
     
     # Mindest-RAM prüfen (2GB)
-    total_ram=$(free -m | awk \'NR==2{printf "%.0f", $2}\')
+    total_ram=$(free -m | awk 'NR==2{printf "%.0f", $2}')
     if [[ $total_ram -lt 2048 ]]; then
         warning "Weniger als 2GB RAM erkannt. Empfohlen sind mindestens 2GB."
     fi
     
     # Freier Speicherplatz prüfen (10GB)
-    free_space=$(df / | awk \'NR==2{printf "%.0f", $4/1024/1024}\')
+    free_space=$(df / | awk 'NR==2{printf "%.0f", $4/1024/1024}')
     if [[ $free_space -lt 10 ]]; then
         error "Nicht genügend freier Speicherplatz. Mindestens 10GB erforderlich."
         exit 1
@@ -233,16 +233,17 @@ install_steamcmd() {
     
     # SteamCMD einmal ausführen, um die Verzeichnisstruktur zu erstellen
     log "Führe SteamCMD einmal aus, um die Verzeichnisstruktur zu erstellen..."
-    (cd "$STEAMCMD_DIR" && ./steamcmd.sh +quit || true)
+    mkdir -p "$STEAMCMD_DIR/logs"
+    (cd "$STEAMCMD_DIR" && ./steamcmd.sh +set_logdir "$STEAMCMD_DIR/logs" +quit || true)
     log "SteamCMD installiert"
 }
 
 # ETS2 Dedicated Server installieren
 install_ets2_server() {
     log "Installiere ETS2 Dedicated Server..."
-    (cd "$STEAMCMD_DIR" && ./steamcmd.sh +force_install_dir "$SERVERS_DIR/ets2-dedicated" \\
-             +login anonymous \\
-             +app_update 1948160 validate \\
+    (cd "$STEAMCMD_DIR" && ./steamcmd.sh +set_logdir "$STEAMCMD_DIR/logs" +force_install_dir "$SERVERS_DIR/ets2-dedicated" \
+             +login anonymous \
+             +app_update 1948160 validate \
              +quit || true)
     
     # Berechtigungen setzen
@@ -306,7 +307,7 @@ configure_nginx() {
     cat > /etc/nginx/sites-available/ets2-panel << EOF
 server {
     listen 80;
-    server_name $PANEL_HOST;
+    server_name ${PANEL_HOST};
     
     # Frontend-Dateien
     root /var/www/html;
@@ -314,28 +315,28 @@ server {
     
     # Frontend-Routing (SPA)
     location / {
-        try_files \\$uri \\$uri/ /index.html;
+        try_files \$uri \$uri/ /index.html;
     }
     
     # Backend-API
     location /api {
         proxy_pass http://127.0.0.1:5000;
-        proxy_set_header Host \\$host;
-        proxy_set_header X-Real-IP \\$remote_addr;
-        proxy_set_header X-Forwarded-For \\$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \\$scheme;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
     }
     
     # WebSocket für Echtzeit-Updates
     location /socket.io {
         proxy_pass http://127.0.0.1:5000;
         proxy_http_version 1.1;
-        proxy_set_header Upgrade \\$http_upgrade;
+        proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection "upgrade";
-        proxy_set_header Host \\$host;
-        proxy_set_header X-Real-IP \\$remote_addr;
-        proxy_set_header X-Forwarded-For \\$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \\$scheme;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
     }
 }
 EOF
@@ -417,7 +418,25 @@ initialize_database() {
     export PYTHONPATH=$INSTALL_DIR/backend
     
     # Datenbank-Tabellen erstellen (würde normalerweise durch Flask-Migrate gemacht)
-    python -c "\\nfrom src.models.user import db, User\\nfrom src.main import app\\n\\nwith app.app_context():\\n    db.create_all()\\n    \\n    # Admin-Benutzer erstellen\\n    admin = User(\\n        username=\\\'$ADMIN_USERNAME\\\',\\n        email=\\\'$ADMIN_EMAIL\\\',\\n        role=\\\'admin\\\'\\n    )\\n    admin.set_password(\\\'$ADMIN_PASSWORD\\\')\\n    \\n    db.session.add(admin)\\n    db.session.commit()\\n    print(\\\'Admin-Benutzer erstellt\\\')\\n"
+    python -c "
+from src.models.user import db, User
+from src.main import app
+
+with app.app_context():
+    db.create_all()
+    
+    # Admin-Benutzer erstellen
+    admin = User(
+        username='$ADMIN_USERNAME',
+        email='$ADMIN_EMAIL',
+        role='admin'
+    )
+    admin.set_password('$ADMIN_PASSWORD')
+    
+    db.session.add(admin)
+    db.session.commit()
+    print('Admin-Benutzer erstellt')
+"
     
     log "Datenbank initialisiert"
 }
@@ -583,10 +602,13 @@ main() {
 }
 
 # Fehlerbehandlung
-trap \'error "Installation fehlgeschlagen in Zeile $LINENO"\' ERR
+trap 'error "Installation fehlgeschlagen in Zeile $LINENO"' ERR
 
 # Skript ausführen
 main "$@"
+
+
+
 
 
 
