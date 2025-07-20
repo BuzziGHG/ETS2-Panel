@@ -7,15 +7,15 @@
 set -e  # Beende bei Fehlern
 
 # Farben für die Ausgabe
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+RED=\'\\033[0;31m\'
+GREEN=\'\\033[0;32m\'
+YELLOW=\'\\033[1;33m\'
+BLUE=\'\\033[0;34m\'
+NC=\'\\033[0m\' # No Color
 
 # Logging-Funktion
 log() {
-    echo -e "${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')] $1${NC}"
+    echo -e "${GREEN}[$(date +\'%Y-%m-%d %H:%M:%S\')] $1${NC}"
 }
 
 error() {
@@ -66,13 +66,13 @@ check_requirements() {
     fi
     
     # Mindest-RAM prüfen (2GB)
-    total_ram=$(free -m | awk 'NR==2{printf "%.0f", $2}')
+    total_ram=$(free -m | awk \'NR==2{printf "%.0f", $2}\')
     if [[ $total_ram -lt 2048 ]]; then
         warning "Weniger als 2GB RAM erkannt. Empfohlen sind mindestens 2GB."
     fi
     
     # Freier Speicherplatz prüfen (10GB)
-    free_space=$(df / | awk 'NR==2{printf "%.0f", $4/1024/1024}')
+    free_space=$(df / | awk \'NR==2{printf "%.0f", $4/1024/1024}\')
     if [[ $free_space -lt 10 ]]; then
         error "Nicht genügend freier Speicherplatz. Mindestens 10GB erforderlich."
         exit 1
@@ -342,7 +342,12 @@ EOF
     
     # Site aktivieren
     ln -sf /etc/nginx/sites-available/ets2-panel /etc/nginx/sites-enabled/
-    rm -f /etc/nginx/sites-enabled/default
+    
+    # Ensure default Nginx configuration is removed or disabled
+    if [ -f /etc/nginx/sites-enabled/default ]; then
+        log "Removing default Nginx site configuration."
+        rm -f /etc/nginx/sites-enabled/default
+    fi
     
     # Nginx-Konfiguration testen
     nginx -t
@@ -350,13 +355,13 @@ EOF
     log "Nginx konfiguriert"
 }
 
-# HTTPS mit Let\'s Encrypt einrichten
+# HTTPS mit Let\\\'s Encrypt einrichten
 setup_https() {
     if [[ "$ENABLE_HTTPS" != "y" && "$ENABLE_HTTPS" != "Y" ]]; then
         return
     fi
     
-    log "Richte HTTPS mit Let\'s Encrypt ein..."
+    log "Richte HTTPS mit Let\\\'s Encrypt ein..."
     
     # Certbot installieren
     apt-get install -y certbot python3-certbot-nginx
@@ -412,7 +417,7 @@ initialize_database() {
     export PYTHONPATH=$INSTALL_DIR/backend
     
     # Datenbank-Tabellen erstellen (würde normalerweise durch Flask-Migrate gemacht)
-    python -c "\nfrom src.models.user import db, User\nfrom src.main import app\n\nwith app.app_context():\n    db.create_all()\n    \n    # Admin-Benutzer erstellen\n    admin = User(\n        username=\\'$ADMIN_USERNAME\\',\n        email=\\'$ADMIN_EMAIL\\',\n        role=\\'admin\\'\n    )\n    admin.set_password(\\'$ADMIN_PASSWORD\\')\n    \n    db.session.add(admin)\n    db.session.commit()\n    print(\\'Admin-Benutzer erstellt\\')\n"
+    python -c "\\nfrom src.models.user import db, User\\nfrom src.main import app\\n\\nwith app.app_context():\\n    db.create_all()\\n    \\n    # Admin-Benutzer erstellen\\n    admin = User(\\n        username=\\\'$ADMIN_USERNAME\\\',\\n        email=\\\'$ADMIN_EMAIL\\\',\\n        role=\\\'admin\\\'\\n    )\\n    admin.set_password(\\\'$ADMIN_PASSWORD\\\')\\n    \\n    db.session.add(admin)\\n    db.session.commit()\\n    print(\\\'Admin-Benutzer erstellt\\\')\\n"
     
     log "Datenbank initialisiert"
 }
@@ -578,8 +583,10 @@ main() {
 }
 
 # Fehlerbehandlung
-trap 'error "Installation fehlgeschlagen in Zeile $LINENO"' ERR
+trap \'error "Installation fehlgeschlagen in Zeile $LINENO"\' ERR
 
 # Skript ausführen
 main "$@"
+
+
 
