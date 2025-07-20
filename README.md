@@ -54,6 +54,12 @@ The panel now supports multiple languages:
 
 ### 🚀 Quick Start
 
+Install Python und git
+
+apt install git 
+
+apt install python3.11-venv
+
 To install the ETS2 Server Panel, first clone the repository and then run the installation script:
 
 ```bash
@@ -257,6 +263,12 @@ Das Panel unterstützt jetzt mehrere Sprachen:
 - `README.md` - Diese zweisprachige Übersichtsdatei
 
 ### 🚀 Schnellstart
+
+Instaliere Git und Python
+
+apt install git 
+
+apt install python3.11-venv
 
 Um das ETS2 Server Panel zu installieren, klonen Sie zuerst das Repository und führen Sie dann das Installationsskript aus:
 
